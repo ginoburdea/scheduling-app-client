@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { genFake400Error, genFakeAuthRes } from '../utils/genFake'
 
 describe('Register page', () => {
     describe('Successful registration', () => {
@@ -8,9 +9,11 @@ describe('Register page', () => {
             cy.getBySelector('input-email').type(faker.internet.email())
             cy.getBySelector('input-password').type(faker.internet.password())
 
-            cy.intercept('**/users/register', { fixture: 'authSuccess.json' })
+            cy.intercept('**/users/register', {
+                body: genFakeAuthRes(),
+            })
             cy.getBySelector('button-submit').click()
-            cy.url().should('endWith', '/dashboard')
+            cy.url().should('endWith', '/update-calendar')
         })
     })
 
@@ -21,7 +24,7 @@ describe('Register page', () => {
             cy.getBySelector('input-email').type(faker.internet.email())
 
             cy.intercept('**/users/register', {
-                fixture: 'authError.json',
+                body: genFake400Error('password'),
                 statusCode: 400,
             })
             cy.getBySelector('button-submit').click()

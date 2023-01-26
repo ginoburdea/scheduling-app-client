@@ -1,3 +1,4 @@
+import { useUserStore } from '@/store/userStore'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
@@ -16,17 +17,33 @@ const routes: RouteRecordRaw[] = [
     {
         name: 'Dashboard',
         path: '/dashboard',
+        meta: { requiresLogin: true },
         component: () => import('@/views/Dashboard.vue'),
     },
     {
+        name: 'UpdateCalendar',
+        path: '/update-calendar',
+        meta: { center: true, requiresLogin: true },
+        component: () => import('@/views/UpdateCalendar.vue'),
+    },
+    {
         path: '/:all(.*)',
-        redirect: 'Register',
+        redirect: { name: 'Register' },
     },
 ]
 
 export const router = createRouter({
     history: createWebHistory(),
     routes,
+})
+
+router.beforeEach(to => {
+    if (to.meta.requiresLogin) {
+        const userStore = useUserStore()
+        if (!userStore.isLoggedIn) {
+            return { name: 'Login' }
+        }
+    }
 })
 
 router.afterEach(to => {

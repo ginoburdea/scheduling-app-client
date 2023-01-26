@@ -3,6 +3,7 @@ import Button from '@/components/Button.vue'
 import Input from '@/components/Input.vue'
 import { useUserStore } from '@/store/userStore'
 import { registerUser } from '@/utils/api'
+import { handleErrors } from '@/utils/handleErrors'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -31,56 +32,47 @@ const submitForm = async () => {
             password: formData.password,
         })
         userStore.$patch(data)
-        router.push({ name: 'Dashboard' })
-    } catch (error: any) {
-        if (error instanceof registerUser.Error) {
-            const errorField = (error.data.message as string).split(' ')[0]
-
-            if (
-                error.status === 400 &&
-                (errorField === 'email' || errorField === 'password')
-            ) {
-                errors[errorField] = error.data.message
-                return
-            }
-
-            errors.other = error.data.message
-            return
-        }
-        errors.other = error.message
+        router.push({ name: 'UpdateCalendar' })
+    } catch (err: any) {
+        const { key, error } = handleErrors<keyof typeof errors>(
+            err,
+            Object.keys(formData)
+        )
+        if (!error) return
+        errors[key] = error
     }
 }
 </script>
 
 <template>
-    <div class="space-y-3">
-        <p class="text-3xl font-bold">Register</p>
+    <p class="text-3xl font-bold">Register</p>
 
-        <form class="space-y-2" @submit.prevent="submitForm">
-            <Input
-                v-model="formData.email"
-                :error="errors.email"
-                label="Email"
-                type="email"
-                data-cy="input-email"
-                @input="errors.email = ''" />
-            <Input
-                v-model="formData.password"
-                :error="errors.password"
-                label="Password"
-                type="password"
-                data-cy="input-password"
-                @input="errors.password = ''" />
-            <Button type="submit" data-cy="button-submit">Submit</Button>
-        </form>
+    <form class="space-y-2" @submit.prevent="submitForm">
+        <Input
+            v-model="formData.email"
+            :error="errors.email"
+            label="Email"
+            type="email"
+            data-cy="input-email"
+            @input="errors.email = ''" />
+        <Input
+            v-model="formData.password"
+            :error="errors.password"
+            label="Password"
+            type="password"
+            data-cy="input-password"
+            @input="errors.password = ''" />
+        <Button type="submit" data-cy="button-submit">Submit</Button>
+    </form>
 
-        <p class="text-danger-2" data-cy="text-error">{{ errors.other }}</p>
+    <p class="text-danger-2" data-cy="text-error">{{ errors.other }}</p>
 
-        <p>
-            Already registered?
-            <router-link class="link" to="Login">Log in instead</router-link>
-        </p>
-    </div>
+    <p>
+        Already registered?
+        <router-link class="link" :to="{ name: 'Login' }"
+            >Log in instead</router-link
+        >
+    </p>
 </template>
 
 <style scoped></style>

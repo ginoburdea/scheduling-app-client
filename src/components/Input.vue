@@ -23,8 +23,11 @@ const id = uuidv4()
 
 <template>
     <div>
-        <label :for="id">{{ props.label }}</label>
-        <input
+        <label v-if="props.type !== 'checkbox'" :for="id">{{
+            props.label
+        }}</label>
+        <component
+            :is="props.type === 'textarea' ? 'textarea' : 'input'"
             v-bind="$attrs"
             :id="id"
             class="box-border w-full rounded-md border-2 border-primary-3 bg-primary-1 text-primary-4 focus:border-primary-4 focus:ring-0"
@@ -35,7 +38,12 @@ const id = uuidv4()
             :value="props.modelValue"
             :type="props.type"
             @input="event => emit('update:modelValue', event.target.value)" />
-        <p class="text-danger-2">{{ props.error }}</p>
+        <label v-if="props.type === 'checkbox'" :for="id">{{
+            props.label
+        }}</label>
+        <p v-if="props.type !== 'checkbox'" class="text-danger-2">
+            {{ props.error }}
+        </p>
     </div>
 </template>
 

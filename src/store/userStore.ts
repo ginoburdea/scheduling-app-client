@@ -10,5 +10,11 @@ export const useUserStore = defineStore('user', {
         session: undefined,
         sessionExpiresAt: undefined,
     }),
+    getters: {
+        isLoggedIn: state =>
+            state.session != undefined &&
+            state.sessionExpiresAt != undefined &&
+            +new Date(state.sessionExpiresAt) > Date.now(),
+    },
     persist: true,
 })

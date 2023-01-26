@@ -6,7 +6,7 @@ declare global {
              * @example cy.getBySelector('greeting')
              */
             getBySelector(value: string): Chainable<JQuery<HTMLElement>>
-            getUrlByName(routeName: string): string
+            logIn(): void
         }
     }
 }
