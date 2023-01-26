@@ -23,9 +23,7 @@ const id = uuidv4()
 
 <template>
     <div>
-        <label v-if="props.type !== 'checkbox'" :for="id">{{
-            props.label
-        }}</label>
+        <label :for="id">{{ props.label }}</label>
         <component
             :is="props.type === 'textarea' ? 'textarea' : 'input'"
             v-bind="$attrs"
@@ -38,10 +36,7 @@ const id = uuidv4()
             :value="props.modelValue"
             :type="props.type"
             @input="event => emit('update:modelValue', event.target.value)" />
-        <label v-if="props.type === 'checkbox'" :for="id">{{
-            props.label
-        }}</label>
-        <p v-if="props.type !== 'checkbox'" class="text-danger-2">
+        <p class="text-danger-2">
             {{ props.error }}
         </p>
     </div>

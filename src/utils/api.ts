@@ -24,4 +24,6 @@ export const registerUser = fetcher
     .method('post')
     .create()
 
+export const logInUser = fetcher.path('/users/log-in').method('post').create()
+
 export const updateCalendar = fetcher.path('/calendars').method('put').create()

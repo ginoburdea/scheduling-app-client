@@ -27,10 +27,7 @@ const submitForm = async () => {
     errors.other = ''
 
     try {
-        const { data } = await registerUser({
-            email: formData.email,
-            password: formData.password,
-        })
+        const { data } = await registerUser(formData)
         userStore.$patch(data)
         router.push({ name: 'UpdateCalendar' })
     } catch (err: any) {
@@ -62,7 +59,7 @@ const submitForm = async () => {
             type="password"
             data-cy="input-password"
             @input="errors.password = ''" />
-        <Button type="submit" data-cy="button-submit">Submit</Button>
+        <Button type="submit" data-cy="button-submit">Register</Button>
     </form>
 
     <p class="text-danger-2" data-cy="text-error">{{ errors.other }}</p>

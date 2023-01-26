@@ -1,15 +1,28 @@
 import { faker } from '@faker-js/faker'
 import { genFake400Error, genFakeAuthRes } from '../utils/genFake'
 
-describe('Register page', () => {
-    describe('Successful registration', () => {
-        it('should register a user successfully', () => {
-            cy.visit('/register')
+describe('Login page', () => {
+    describe('Successful log in', () => {
+        it('should successfully log in a user', () => {
+            cy.visit('/login')
 
             cy.getBySelector('input-email').type(faker.internet.email())
             cy.getBySelector('input-password').type(faker.internet.password())
 
-            cy.intercept('**/users/register', {
+            cy.intercept('**/users/log-in', {
+                body: genFakeAuthRes(),
+            })
+            cy.getBySelector('button-submit').click()
+            cy.url().should('endWith', '/dashboard')
+        })
+
+        it('should successfully log in a user then redirect to the appropriate page', () => {
+            cy.visit('/login?redirectTo=/update-calendar')
+
+            cy.getBySelector('input-email').type(faker.internet.email())
+            cy.getBySelector('input-password').type(faker.internet.password())
+
+            cy.intercept('**/users/log-in', {
                 body: genFakeAuthRes(),
             })
             cy.getBySelector('button-submit').click()
@@ -17,13 +30,13 @@ describe('Register page', () => {
         })
     })
 
-    describe('Failed registration', () => {
-        it('should not register a user when the password is required', () => {
-            cy.visit('/register')
+    describe('Failed log in', () => {
+        it('should not log in a user when the password is required', () => {
+            cy.visit('/login')
 
             cy.getBySelector('input-email').type(faker.internet.email())
 
-            cy.intercept('**/users/register', {
+            cy.intercept('**/users/log-in', {
                 body: genFake400Error('password'),
                 statusCode: 400,
             })
@@ -32,12 +45,12 @@ describe('Register page', () => {
         })
 
         it('should not register a user when an unexpected error occurs', () => {
-            cy.visit('/register')
+            cy.visit('/login')
 
             cy.getBySelector('input-email').type(faker.internet.email())
             cy.getBySelector('input-password').type(faker.internet.password())
 
-            cy.intercept('**/users/register', {
+            cy.intercept('**/users/log-in', {
                 fixture: 'unexpectedError.json',
                 statusCode: 500,
             })
