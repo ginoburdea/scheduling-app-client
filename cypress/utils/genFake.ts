@@ -62,3 +62,37 @@ export const genFakeAppointments = (countPerDay: number) => {
             })),
     }
 }
+
+export const genFakeCalendarInfo = () => ({
+    businessName: faker.company.name(),
+    businessDescription: faker.lorem.sentence(),
+})
+
+export const genFakeAvailableDays = () => {
+    let index = 0
+
+    return {
+        dates: Array(14)
+            .fill(null)
+            .map(() => dayjs().add(index++, 'days'))
+            .filter(day => ![0, 6].includes(day.get('day')))
+            .map(date => date.toDate()),
+    }
+}
+
+export const genFakeAvailableSpots = (date = new Date()) => ({
+    spots: Array(5)
+        .fill(null)
+        .map((_, index) =>
+            dayjs(date)
+                .add(8 + index * 2, 'hours')
+                .startOf('hours')
+                .toDate()
+        ),
+})
+
+export const genFakeAppointment = () => ({
+    date: faker.date.future(),
+    name: faker.name.fullName(),
+    phoneNumber: faker.phone.number(),
+})

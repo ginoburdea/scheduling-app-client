@@ -1,4 +1,5 @@
 import { useUserStore } from '@/store/userStore'
+import { sentenceCase } from 'sentence-case'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
@@ -23,7 +24,7 @@ const routes: RouteRecordRaw[] = [
     {
         name: 'BookAnAppointment',
         path: '/book-an-appointment/:calendarId',
-        meta: { requiresLogin: true },
+        meta: { center: true },
         component: () => import('@/views/BookAnAppointment.vue'),
     },
     {
@@ -64,5 +65,5 @@ router.beforeEach(to => {
 })
 
 router.afterEach(to => {
-    document.title = to.name as string
+    document.title = sentenceCase(to.name as string)
 })

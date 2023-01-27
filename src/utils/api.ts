@@ -34,3 +34,20 @@ export const getAppointments = fetcher
     .path('/calendars/appointments')
     .method('get')
     .create()
+
+export const getCalendarInfo = fetcher.path('/calendars').method('get').create()
+
+export const getAvailableDays = fetcher
+    .path('/calendars/available-days')
+    .method('get')
+    .create()
+
+export const getAvailableSpots = fetcher
+    .path('/calendars/available-spots')
+    .method('get')
+    .create()
+
+export const setAppointment = fetcher
+    .path('/calendars/set-appointment')
+    .method('post')
+    .create()
