@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 html {
-    @apply bg-primary-1;
+    @apply bg-primary-1 text-primary-5;
 }
 
 html,
@@ -13,5 +13,5 @@ body,
 }
 
 .link {
-    @apply text-accent-2 hover:underline;
+    @apply cursor-pointer text-accent-2 hover:underline;
 }

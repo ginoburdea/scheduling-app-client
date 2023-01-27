@@ -26,4 +26,11 @@ export const registerUser = fetcher
 
 export const logInUser = fetcher.path('/users/log-in').method('post').create()
 
+export const logOutUser = fetcher.path('/users/log-out').method('post').create()
+
 export const updateCalendar = fetcher.path('/calendars').method('put').create()
+
+export const getAppointments = fetcher
+    .path('/calendars/appointments')
+    .method('get')
+    .create()

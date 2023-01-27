@@ -1,7 +1,7 @@
 {
     "name": "scheduling-app-client",
     "private": true,
-    "version": "0.3.0",
+    "version": "0.4.0",
     "license": "MIT",
     "type": "module",
     "scripts": {
@@ -19,6 +19,7 @@
     "dependencies": {
         "axios": "^1.2.3",
         "crypto-js": "^4.1.1",
+        "dayjs": "^1.11.7",
         "pinia": "^2.0.29",
         "pinia-plugin-persistedstate": "^3.0.2",
         "uuid": "^9.0.0",

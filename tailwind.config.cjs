@@ -17,6 +17,7 @@ module.exports = {
                 2: colors.sky['100'],
                 3: colors.sky['200'],
                 4: colors.sky['300'],
+                5: '#010c13',
             },
             accent: {
                 1: colors.amber['500'],
