@@ -2,12 +2,14 @@
 import Input from '@/components/Input.vue'
 import { useUserStore } from '@/store/userStore'
 import { getAppointments, logOutUser } from '@/utils/api'
+import { components } from '@/utils/apiSchema'
 import { handleErrors } from '@/utils/handleErrors'
 import dayjs from 'dayjs'
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const showMenu = ref(false)
+const desktopView = ref<HTMLDivElement | null>(null)
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -56,11 +58,16 @@ onMounted(() => {
 
 onUnmounted(() => clearInterval(intervalId.value))
 
-let appointments = reactive([])
-const selectedTime = ref(new Date())
+type Appointment = components['schemas']['Appointment']
+let appointments = reactive<Appointment[]>([])
+const selectedTime = ref<Date>(new Date())
 
-const groupAppointmentsByHour = (appointments: any[], day: Date) => {
-    const result = {}
+onMounted(() => {
+    selectedTime.value = new Date()
+})
+
+const groupAppointmentsByHour = (appointments: Appointment[], day: Date) => {
+    const result: { [key: string]: MiniAppointment[] } = {}
     for (let i = 0; i < 24; i++) {
         const key = `${i < 10 ? '0' : ''}${i}:00`
         result[key] = []
@@ -94,29 +101,31 @@ const appointmentsByWeekByHour = computed(() => {
         )
 })
 
-watch(
-    selectedTime,
-    async updatedSelectedTime => {
-        errors.other = ''
-        try {
-            const { data } = await getAppointments({
-                month: updatedSelectedTime.getMonth() + 1,
-                year: updatedSelectedTime.getFullYear(),
-            })
+watch(selectedTime, async updatedSelectedTime => {
+    errors.other = ''
+    try {
+        const { display } = window.getComputedStyle(
+            desktopView.value as HTMLDivElement
+        )
 
-            // eslint-disable-next-line
-            while (appointments.pop()) {}
-            appointments.push(...data.appointments)
-        } catch (err: any) {
-            const { key, error } = handleErrors<keyof typeof errors>(err, [])
-            if (!error) return
-            errors[key] = error
-        }
-    },
-    { immediate: true }
-)
+        const { data } = await getAppointments({
+            atOrAfter: dayjs(updatedSelectedTime).startOf('day').toISOString(),
+            atOrBefore: dayjs(updatedSelectedTime)
+                .add(display === 'none' ? 7 : 0, 'days')
+                .endOf('day')
+                .toISOString(),
+        })
 
-const calculateHeight = appointment => {
+        appointments.splice(0, appointments.length, ...data.appointments)
+    } catch (err: any) {
+        const { key, error } = handleErrors<keyof typeof errors>(err, [])
+        if (!error) return
+        errors[key] = error
+    }
+})
+
+type MiniAppointment = components['schemas']['MiniAppointment']
+const calculateHeight = (appointment: MiniAppointment) => {
     const end = +new Date(appointment.endsAt)
     const start = +new Date(appointment.startsAt)
     const diffInSeconds = (end - start) / 1000 / 60
@@ -125,13 +134,18 @@ const calculateHeight = appointment => {
     return `${diffInSeconds / 15 - gapSize}rem`
 }
 
-const calculateMarginTop = (appointment, hours = 0) => {
+const calculateMarginTop = (
+    appointment: { startsAt: Date | string; [key: string]: any },
+    hours = 0
+) => {
     const start = new Date(appointment.startsAt)
     return `${(hours * 60 + start.getMinutes()) / 15}rem`
 }
+// const {getComputedStyle}  =window
 </script>
 
 <template>
+    <!-- <p>{{ getComputedStyle(desktopView) }}</p> -->
     <div class="box-border p-4">
         <div class="sm:hidden">
             <div class="relative flex items-center justify-between">
@@ -250,7 +264,7 @@ const calculateMarginTop = (appointment, hours = 0) => {
             </table>
         </div>
 
-        <div class="hidden sm:block">
+        <div ref="desktopView" class="hidden sm:block">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-1">
                     <span class="whitespace-nowrap text-lg font-bold"
