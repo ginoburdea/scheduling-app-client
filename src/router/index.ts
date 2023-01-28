@@ -28,12 +28,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/BookAnAppointment.vue'),
     },
     {
-        name: 'ViewAppointment',
-        path: '/view-appointment/:appointmentId',
-        meta: { requiresLogin: true },
-        component: () => import('@/views/ViewAppointment.vue'),
-    },
-    {
         name: 'UpdateCalendar',
         path: '/update-calendar',
         meta: { center: true, requiresLogin: true },

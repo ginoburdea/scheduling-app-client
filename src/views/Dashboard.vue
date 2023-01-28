@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppointmentModal from '@/components/Dashboard/AppointmentModal.vue'
 import Input from '@/components/Input.vue'
 import { useUserStore } from '@/store/userStore'
 import { getAppointments, logOutUser } from '@/utils/api'
@@ -141,11 +142,14 @@ const calculateMarginTop = (
     const start = new Date(appointment.startsAt)
     return `${(hours * 60 + start.getMinutes()) / 15}rem`
 }
-// const {getComputedStyle}  =window
+
+const selectedAppointmentId = ref<number>()
 </script>
 
 <template>
-    <!-- <p>{{ getComputedStyle(desktopView) }}</p> -->
+    <AppointmentModal
+        :appointment-id="selectedAppointmentId"
+        @close="selectedAppointmentId = undefined" />
     <div class="box-border p-4">
         <div class="sm:hidden">
             <div class="relative flex items-center justify-between">
@@ -244,7 +248,7 @@ const calculateMarginTop = (
                                     new Date().getHours()
                                 ),
                             }"></div>
-                        <router-link
+                        <a
                             v-for="appointment in apps"
                             :key="appointment.id"
                             class="absolute z-10 w-full cursor-pointer rounded bg-primary-3 p-1 hover:bg-primary-4"
@@ -252,13 +256,10 @@ const calculateMarginTop = (
                                 height: calculateHeight(appointment),
                                 marginTop: calculateMarginTop(appointment),
                             }"
-                            :to="{
-                                name: 'ViewAppointment',
-                                params: { appointmentId: appointment.id },
-                            }">
+                            @click="selectedAppointmentId = appointment.id">
                             {{ dayjs(appointment.startsAt).format('HH:mm') }} -
                             {{ dayjs(appointment.endsAt).format('HH:mm') }}
-                        </router-link>
+                        </a>
                     </td>
                 </tr>
             </table>
@@ -376,7 +377,7 @@ const calculateMarginTop = (
                                     new Date().getHours()
                                 ),
                             }"></div>
-                        <router-link
+                        <a
                             v-for="appointment in apps[hours]"
                             :key="appointment.id"
                             class="absolute z-10 w-full cursor-pointer rounded bg-primary-3 p-1 hover:bg-primary-4"
@@ -384,13 +385,10 @@ const calculateMarginTop = (
                                 height: calculateHeight(appointment),
                                 marginTop: calculateMarginTop(appointment),
                             }"
-                            :to="{
-                                name: 'ViewAppointment',
-                                params: { appointmentId: appointment.id },
-                            }">
+                            @click="selectedAppointmentId = appointment.id">
                             {{ dayjs(appointment.startsAt).format('HH:mm') }} -
                             {{ dayjs(appointment.endsAt).format('HH:mm') }}
-                        </router-link>
+                        </a>
                     </td>
                 </tr>
             </table>

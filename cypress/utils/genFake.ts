@@ -39,6 +39,11 @@ export const genFake400Error = (fieldName: string) => ({
     message: `${fieldName} is required`,
 })
 
+export const genFakeAppointmentInfo = () => ({
+    clientName: faker.name.fullName(),
+    clientPhoneNumber: faker.phone.number(),
+})
+
 export const genFakeAppointments = (countPerDay: number) => {
     const firstDate = dayjs().subtract(2, 'weeks')
     return {

@@ -1,8 +1,31 @@
-import { genFakeAppointments } from '../utils/genFake'
+import { genFakeAppointmentInfo, genFakeAppointments } from '../utils/genFake'
 
 describe('Dashboard page', () => {
     beforeEach(() => {
         cy.logIn()
+    })
+
+    describe('Successfully getting appointments on desktop', () => {
+        it('should get appointments for the current week', () => {
+            cy.intercept('**/calendars/appointments**', {
+                body: genFakeAppointments(5),
+            })
+            cy.visit('/dashboard')
+
+            const appointmentInfo = genFakeAppointmentInfo()
+            cy.intercept('**/calendars/appointment?appointmentId=*', {
+                body: appointmentInfo,
+            })
+            cy.get('.calendar-block > a').filter(':visible').first().click()
+
+            cy.getBySelector('modal-appointmentInfo').should('exist')
+            cy.getBySelector('text-clientName').contains(
+                appointmentInfo.clientName
+            )
+            cy.getBySelector('text-clientPhoneNumber').contains(
+                appointmentInfo.clientPhoneNumber
+            )
+        })
     })
 
     describe('Successfully getting appointments on mobile', () => {
