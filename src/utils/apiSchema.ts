@@ -13,9 +13,12 @@ export interface paths {
     '/users/log-out': {
         post: operations['UsersController_logOut']
     }
+    '/calendars/settings': {
+        get: operations['CalendarsController_getCalendarSettings']
+    }
     '/calendars': {
         get: operations['CalendarsController_getCalendarInfo']
-        put: operations['CalendarsController_register']
+        put: operations['CalendarsController_updateCalendar']
     }
     '/calendars/available-days': {
         get: operations['CalendarsController_getAvailableDays']
@@ -39,70 +42,162 @@ export type webhooks = Record<string, never>
 export interface components {
     schemas: {
         ErrorDto: {
+            /** @example 400 */
             statusCode: number
+            /** @example email is required */
             message: string
+            /** @example Bad request */
             error?: string
         }
         AuthDto: {
+            /** Format: email */
             email: string
+            /** @example U5@!d3r78%m%zb*c */
             password: string
         }
         AuthRes: {
+            /** Format: uuid */
             calendarId: string
+            /** Format: email */
             userEmail: string
+            /** @example mu5bKH*@dfC2^!N22LjG8Lf@QoCye^D8om%gMVn!D@n5paLeZq#^xW6XS%6gqTJ9 */
             session: string
             /** Format: date-time */
             sessionExpiresAt: string
         }
+        GetCalendarSettingsRes: {
+            /** @example Lorem Ipsum Inc. */
+            businessName: string
+            /** @example Lorem ipsum dolor sit amet, consectetur adipiscing elit */
+            businessDescription: string
+            /** @example 09:00 */
+            dayStartsAt: string
+            /** @example 17:00 */
+            dayEndsAt: string
+            /** @example 5 */
+            breakBetweenBookings: number
+            /** @example 25 */
+            bookingDuration: number
+            /** @example 14 */
+            bookInAdvance: number
+            /**
+             * @example [
+             *   0,
+             *   1,
+             *   2,
+             *   3,
+             *   4
+             * ]
+             */
+            workingDays: number[]
+        }
         PartialCalendar: {
+            /** @example Lorem Ipsum Inc. */
             businessName?: string
+            /** @example Lorem ipsum dolor sit amet, consectetur adipiscing elit */
             businessDescription?: string
+            /** @example 09:00 */
             dayStartsAt?: string
+            /** @example 17:00 */
             dayEndsAt?: string
+            /** @example 5 */
             breakBetweenBookings?: number
+            /** @example 25 */
             bookingDuration?: number
+            /** @example 14 */
             bookInAdvance?: number
+            /**
+             * @example [
+             *   0,
+             *   1,
+             *   2,
+             *   3,
+             *   4
+             * ]
+             */
             workingDays?: number[]
         }
         UpdateCalendarDto: {
+            /** Format: uuid */
             id: string
             updates: components['schemas']['PartialCalendar']
         }
         UpdateCalendarRes: {
+            /** @example Lorem Ipsum Inc. */
             businessName: string
+            /** @example Lorem ipsum dolor sit amet, consectetur adipiscing elit */
             businessDescription: string
+            /** @example 09:00 */
             dayStartsAt: string
+            /** @example 17:00 */
             dayEndsAt: string
+            /** @example 5 */
             breakBetweenBookings: number
+            /** @example 25 */
             bookingDuration: number
+            /** @example 14 */
             bookInAdvance: number
+            /**
+             * @example [
+             *   0,
+             *   1,
+             *   2,
+             *   3,
+             *   4
+             * ]
+             */
             workingDays: number[]
         }
         GetCalendarInfoRes: {
+            /** @example Lorem Ipsum Inc. */
             businessName: string
+            /** @example Lorem ipsum dolor sit amet, consectetur adipiscing elit */
             businessDescription: string
         }
         GetAvailableDaysRes: {
-            dates: string
+            dates: string[]
+        }
+        GetAvailableSpotsRes: {
+            spots: string[]
         }
         SetAppointmentDto: {
+            /** Format: uuid */
             calendarId: string
             /** Format: date-time */
             date: string
+            /** @example John Doe */
             name: string
+            /** @example +4 0700 000 000 */
             phoneNumber: string
         }
         SetAppointmentRes: {
             /** Format: date-time */
             date: string
+            /** @example +4 0700 000 000 */
             phoneNumber: string
+            /** @example John Doe */
             name: string
         }
+        MiniAppointment: {
+            /** @example 175 */
+            id: number
+            /** Format: date-time */
+            startsAt: string
+            /** Format: date-time */
+            endsAt: string
+        }
+        Appointment: {
+            /** Format: date-time */
+            day: string
+            appointments: components['schemas']['MiniAppointment'][]
+        }
         GetAppointmentsRes: {
-            appointments: string[]
+            appointments: components['schemas']['Appointment'][]
         }
         GetAppointmentInfoRes: {
+            /** @example John Doe */
             clientName: string
+            /** @example +4 0700 000 000 */
             clientPhoneNumber: string
         }
     }
@@ -164,6 +259,20 @@ export interface operations {
             }
         }
     }
+    CalendarsController_getCalendarSettings: {
+        responses: {
+            200: {
+                content: {
+                    'application/json': components['schemas']['GetCalendarSettingsRes']
+                }
+            }
+            default: {
+                content: {
+                    'application/json': components['schemas']['ErrorDto']
+                }
+            }
+        }
+    }
     CalendarsController_getCalendarInfo: {
         parameters: {
             query: {
@@ -183,7 +292,7 @@ export interface operations {
             }
         }
     }
-    CalendarsController_register: {
+    CalendarsController_updateCalendar: {
         requestBody: {
             content: {
                 'application/json': components['schemas']['UpdateCalendarDto']
@@ -231,7 +340,7 @@ export interface operations {
         responses: {
             200: {
                 content: {
-                    'application/json': components['schemas']['GetAvailableDaysRes']
+                    'application/json': components['schemas']['GetAvailableSpotsRes']
                 }
             }
             default: {
@@ -263,8 +372,8 @@ export interface operations {
     CalendarsController_getAppointments: {
         parameters: {
             query: {
-                month: number
-                year: number
+                atOrAfter: string
+                atOrBefore: string
             }
         }
         responses: {
@@ -282,6 +391,7 @@ export interface operations {
     }
     CalendarsController_getAppointmentInfo: {
         parameters: {
+            /** @example 175 */
             query: {
                 appointmentId: number
             }
