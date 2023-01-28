@@ -2,14 +2,12 @@
 import Button from '@/components/Button.vue'
 import Checkbox from '@/components/Checkbox.vue'
 import Input from '@/components/Input.vue'
-import { useUserStore } from '@/store/userStore'
 import { getCalendarSettings, updateCalendar } from '@/utils/api'
 import { handleErrors } from '@/utils/handleErrors'
 import { onBeforeMount, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const userStore = useUserStore()
 
 const initialState = {
     businessName: '',
@@ -56,10 +54,7 @@ const submitForm = async () => {
 
     try {
         console.log(formData.workingDays)
-        await updateCalendar({
-            id: userStore.calendarId as string,
-            updates: formData,
-        })
+        await updateCalendar(formData)
 
         router.push({ name: 'Dashboard' })
     } catch (err: any) {

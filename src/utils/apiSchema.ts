@@ -91,7 +91,7 @@ export interface components {
              */
             workingDays: number[]
         }
-        PartialCalendar: {
+        UpdateCalendarDto: {
             /** @example Lorem Ipsum Inc. */
             businessName?: string
             /** @example Lorem ipsum dolor sit amet, consectetur adipiscing elit */
@@ -116,11 +116,6 @@ export interface components {
              * ]
              */
             workingDays?: number[]
-        }
-        UpdateCalendarDto: {
-            /** Format: uuid */
-            id: string
-            updates: components['schemas']['PartialCalendar']
         }
         UpdateCalendarRes: {
             /** @example Lorem Ipsum Inc. */
