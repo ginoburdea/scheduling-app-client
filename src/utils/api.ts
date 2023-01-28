@@ -51,3 +51,8 @@ export const setAppointment = fetcher
     .path('/calendars/set-appointment')
     .method('post')
     .create()
+
+export const getCalendarSettings = fetcher
+    .path('/calendars/settings')
+    .method('get')
+    .create()

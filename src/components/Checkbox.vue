@@ -7,7 +7,7 @@ export default {
 import { v4 as uuidv4 } from 'uuid'
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: any): void
+    (e: 'update:modelValue', value: typeof props.value): void
 }>()
 
 const props = defineProps({
@@ -26,7 +26,11 @@ const id = uuidv4()
             :id="id"
             class="cursor-pointer rounded border-primary-4 bg-primary-1 text-primary-4 outline-0 checked:bg-primary-4 hover:checked:bg-primary-4 focus:ring-0"
             type="checkbox"
-            :value="props.name"
+            :checked="
+                Array.isArray(props.modelValue)
+                    ? props.modelValue.includes(props.value)
+                    : props.modelValue
+            "
             @input="
                 event =>
                     emit(
@@ -37,7 +41,7 @@ const id = uuidv4()
                                       value => value != props.value
                                   )
                                 : props.modelValue.concat(props.value)
-                            : event.target.value
+                            : event.target.checked
                     )
             " />
         <label :for="id">{{ props.label }}</label>

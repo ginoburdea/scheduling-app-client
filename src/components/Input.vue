@@ -8,14 +8,14 @@ export default {
 import { v4 as uuidv4 } from 'uuid'
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string): void
+    (e: 'update:modelValue', value: typeof props.modelValue): void
 }>()
 
 const props = defineProps({
     label: { type: String, required: true },
     type: { type: String, default: 'text' },
     error: { type: String, default: '' },
-    modelValue: { type: String, required: true },
+    modelValue: { type: [String, Number], required: true },
 })
 
 const id = uuidv4()

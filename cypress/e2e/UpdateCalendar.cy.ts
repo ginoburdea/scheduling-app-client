@@ -5,11 +5,47 @@ describe('Update calendar page', () => {
         cy.logIn()
     })
 
-    describe('Successful update', () => {
-        it('should update the calendar successfully', () => {
+    describe('Successfully getting current calendar settings', () => {
+        it('should get the settings', () => {
+            const initialSettings = genFakeCalendar()
+            cy.intercept('**/calendars/settings', {
+                body: initialSettings,
+            })
             cy.visit('/update-calendar')
 
+            for (const key in initialSettings) {
+                if (key === 'workingDays') {
+                    for (let i = 0; i < 7; i++) {
+                        if (initialSettings.workingDays.includes(i)) {
+                            cy.getBySelector(`input-workingDays-${i}`).should(
+                                'be.checked'
+                            )
+                        } else {
+                            cy.getBySelector(`input-workingDays-${i}`).should(
+                                'not.be.checked'
+                            )
+                        }
+                    }
+
+                    continue
+                }
+
+                cy.getBySelector(`input-${key}`).should(
+                    'have.value',
+                    initialSettings[key]
+                )
+            }
+        })
+    })
+
+    describe('Successful update', () => {
+        it('should update the calendar successfully', () => {
+            cy.intercept('**/calendars/settings', {
+                body: genFakeCalendar(),
+            })
+            cy.visit('/update-calendar')
             const calendar = genFakeCalendar()
+
             cy.getBySelector('input-businessName').type(calendar.businessName)
             cy.getBySelector('input-businessDescription').type(
                 calendar.businessDescription

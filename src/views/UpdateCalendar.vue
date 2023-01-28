@@ -3,7 +3,7 @@ import Button from '@/components/Button.vue'
 import Checkbox from '@/components/Checkbox.vue'
 import Input from '@/components/Input.vue'
 import { useUserStore } from '@/store/userStore'
-import { updateCalendar } from '@/utils/api'
+import { getCalendarSettings, updateCalendar } from '@/utils/api'
 import { handleErrors } from '@/utils/handleErrors'
 import { onBeforeMount, reactive } from 'vue'
 import { useRouter } from 'vue-router'
@@ -19,11 +19,11 @@ const initialState = {
     breakBetweenBookings: '',
     bookingDuration: '',
     bookInAdvance: '',
-    workingDays: [],
+    workingDays: [] as number[],
 }
 
 const formData = reactive({ ...initialState })
-const errors = reactive({ ...initialState, other: '' })
+const errors = reactive({ ...initialState, workingDays: '', other: '' })
 
 const resetErrors = () => {
     for (const key in errors) {
@@ -31,22 +31,31 @@ const resetErrors = () => {
     }
 }
 
-onBeforeMount(() => {
-    for (const key in initialState) {
-        if (key != 'workingDays') {
-            formData[key] = ''
-        } else if (key == 'workingDays') {
-            formData[key] = []
-        }
-    }
-
+onBeforeMount(async () => {
     resetErrors()
+
+    try {
+        const { data } = await getCalendarSettings({})
+
+        for (const key in data) {
+            if (Array.isArray(formData[key])) {
+                formData[key].splice(0, formData[key].length, ...data[key])
+            } else {
+                formData[key] = data[key]
+            }
+        }
+    } catch (err: any) {
+        const { key, error } = handleErrors<keyof typeof errors>(err, [])
+        if (!error) return
+        errors[key] = error
+    }
 })
 
 const submitForm = async () => {
     resetErrors()
 
     try {
+        console.log(formData.workingDays)
         await updateCalendar({
             id: userStore.calendarId as string,
             updates: formData,
