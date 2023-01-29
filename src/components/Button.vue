@@ -4,7 +4,7 @@ interface Props {
     type?: 'button' | 'submit' | 'reset'
 }
 
-// eslint-disable-next-line
+// eslint-disable-next-line vue/no-setup-props-destructure
 const { loading = false, type = 'button' } = defineProps<Props>()
 </script>
 

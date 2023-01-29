@@ -26,8 +26,8 @@ const errors = reactive({
 const calendarInfo = reactive({
     businessName: '',
     businessDescription: '',
-    availableDates: [],
-    availableSpots: [],
+    availableDates: [] as string[],
+    availableSpots: [] as string[],
 })
 
 const formData = reactive({
@@ -43,14 +43,15 @@ onBeforeMount(async () => {
     errors.other = ''
     try {
         const { data } = await getCalendarInfo({
-            id: router.currentRoute.value.params.calendarId,
+            id: router.currentRoute.value.params.calendarId as string,
         })
         calendarInfo.businessName = data.businessName
         calendarInfo.businessDescription = data.businessDescription
     } catch (err: any) {
-        const { key, error } = handleErrors<keyof typeof errors>(err, [])
+        const { key, error } = handleErrors(err, [])
         if (!error) return
-        errors[key === 'other' ? 'mainOther' : key] = error
+        errors[(key === 'other' ? 'mainOther' : key) as keyof typeof errors] =
+            error
     }
 })
 
@@ -60,7 +61,8 @@ watch(
         errors.mainOther = ''
         try {
             const { data } = await getAvailableDays({
-                calendarId: router.currentRoute.value.params.calendarId,
+                calendarId: router.currentRoute.value.params
+                    .calendarId as string,
             })
 
             calendarInfo.availableDates.splice(
@@ -68,12 +70,10 @@ watch(
                 calendarInfo.availableDates.length,
                 ...data.dates
             )
-            // while (calendarInfo.availableDates.pop()) {}
-            // calendarInfo.availableDates.push(...data.dates)
         } catch (err: any) {
-            const { key, error } = handleErrors<keyof typeof errors>(err, [])
+            const { key, error } = handleErrors(err, [])
             if (!error) return
-            errors[key] = error
+            errors[key as keyof typeof errors] = error
         }
     }
 )
@@ -96,9 +96,9 @@ watch(
                 ...data.spots
             )
         } catch (err: any) {
-            const { key, error } = handleErrors<keyof typeof errors>(err, [])
+            const { key, error } = handleErrors(err, [])
             if (!error) return
-            errors[key] = error
+            errors[key as keyof typeof errors] = error
         }
     }
 )
@@ -117,12 +117,9 @@ const bookAppointment = async () => {
         // while (calendarInfo.availableDates.pop()) {}
         // calendarInfo.availableDates.push(...data.dates)
     } catch (err: any) {
-        const { key, error } = handleErrors<keyof typeof errors>(
-            err,
-            Object.keys(errors)
-        )
+        const { key, error } = handleErrors(err, Object.keys(errors))
         if (!error) return
-        errors[key] = error
+        errors[key as keyof typeof errors] = error
     }
 }
 

@@ -39,12 +39,9 @@ watch(
             appointment.clientName = data.clientName
             appointment.clientPhoneNumber = data.clientPhoneNumber
         } catch (err: any) {
-            const { key, error } = handleErrors<keyof typeof errors>(
-                err,
-                Object.keys(errors)
-            )
+            const { key, error } = handleErrors(err, Object.keys(errors))
             if (!error) return
-            errors[key] = error
+            errors[key as keyof typeof errors] = error
         }
     },
     { immediate: true }

@@ -25,7 +25,7 @@ const errors = reactive({ ...initialState, workingDays: '', other: '' })
 
 const resetErrors = () => {
     for (const key in errors) {
-        errors[key] = ''
+        errors[key as keyof typeof errors] = ''
     }
 }
 
@@ -36,16 +36,21 @@ onBeforeMount(async () => {
         const { data } = await getCalendarSettings({})
 
         for (const key in data) {
-            if (Array.isArray(formData[key])) {
-                formData[key].splice(0, formData[key].length, ...data[key])
+            if (Array.isArray(formData[key as keyof typeof formData])) {
+                ;(formData[key as keyof typeof formData] as number[]).splice(
+                    0,
+                    formData[key as keyof typeof formData].length,
+                    ...(data[key as keyof typeof data] as number[])
+                )
             } else {
-                formData[key] = data[key]
+                formData[key as keyof Omit<typeof formData, 'workingDays'>] =
+                    data[key as keyof typeof data] as string
             }
         }
     } catch (err: any) {
-        const { key, error } = handleErrors<keyof typeof errors>(err, [])
+        const { key, error } = handleErrors(err, [])
         if (!error) return
-        errors[key] = error
+        errors[key as keyof typeof errors] = error
     }
 })
 
@@ -53,18 +58,15 @@ const submitForm = async () => {
     resetErrors()
 
     try {
-        console.log(formData.workingDays)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore: If formData contains undefined fields, the server will return an error
         await updateCalendar(formData)
 
         router.push({ name: 'Dashboard' })
     } catch (err: any) {
-        const { key, error } = handleErrors<keyof typeof errors>(
-            err,
-            Object.keys(initialState)
-        )
+        const { key, error } = handleErrors(err, Object.keys(initialState))
         if (!error) return
-
-        errors[key] = error
+        errors[key as keyof typeof errors] = error
     }
 }
 

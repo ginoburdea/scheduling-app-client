@@ -41,9 +41,9 @@ const logOut = async () => {
         userStore.$reset()
         router.push({ name: 'Login' })
     } catch (err: any) {
-        const { key, error } = handleErrors<keyof typeof errors>(err, [])
+        const { key, error } = handleErrors(err, [])
         if (!error) return
-        errors[key] = error
+        errors[key as keyof typeof errors] = error
     }
 }
 
@@ -119,9 +119,9 @@ watch(selectedTime, async updatedSelectedTime => {
 
         appointments.splice(0, appointments.length, ...data.appointments)
     } catch (err: any) {
-        const { key, error } = handleErrors<keyof typeof errors>(err, [])
+        const { key, error } = handleErrors(err, [])
         if (!error) return
-        errors[key] = error
+        errors[key as keyof typeof errors] = error
     }
 })
 
@@ -334,18 +334,20 @@ const selectedAppointmentId = ref<number>()
                     <td
                         v-for="i in 7"
                         :key="i - 1"
-                        :set="
-                            (currentDay = dayjs(selectedTime).add(
-                                i - 1,
-                                'days'
-                            ))
-                        "
                         class="w-full border-r-2 border-primary-2 text-center last:border-r-0">
                         <p>
-                            {{ currentDay.format('ddd') }}
+                            {{
+                                dayjs(selectedTime)
+                                    .add(i - 1, 'days')
+                                    .format('ddd')
+                            }}
                         </p>
                         <p class="text-2xl">
-                            {{ currentDay.format('DD') }}
+                            {{
+                                dayjs(selectedTime)
+                                    .add(i - 1, 'days')
+                                    .format('DD')
+                            }}
                         </p>
                     </td>
                 </tr>

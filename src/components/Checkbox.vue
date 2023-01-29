@@ -7,7 +7,7 @@ export default {
 import { v4 as uuidv4 } from 'uuid'
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: typeof props.value): void
+    (e: 'update:modelValue', value: typeof props.modelValue): void
 }>()
 
 const props = defineProps({
@@ -17,6 +17,10 @@ const props = defineProps({
 })
 
 const id = uuidv4()
+
+// interface HTMLCheckboxElement extends HTMLInputElement {
+//     checked: boolean
+// }
 </script>
 
 <template>
@@ -41,7 +45,7 @@ const id = uuidv4()
                                       value => value != props.value
                                   )
                                 : props.modelValue.concat(props.value)
-                            : event.target.checked
+                            : (event.target as HTMLInputElement).checked 
                     )
             " />
         <label :for="id">{{ props.label }}</label>

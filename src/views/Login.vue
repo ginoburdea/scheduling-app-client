@@ -33,12 +33,9 @@ const submitForm = async () => {
         const redirectTo = router.currentRoute.value.query.redirectTo as string
         router.push(redirectTo || { name: 'Dashboard' })
     } catch (err: any) {
-        const { key, error } = handleErrors<keyof typeof errors>(
-            err,
-            Object.keys(formData)
-        )
+        const { key, error } = handleErrors(err, Object.keys(formData))
         if (!error) return
-        errors[key] = error
+        errors[key as keyof typeof errors] = error
     }
 }
 </script>

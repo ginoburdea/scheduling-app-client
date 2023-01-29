@@ -11,39 +11,40 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: string): void
 }>()
 
-const props = defineProps({
-    label: { type: String, required: true },
-    error: { type: String, default: '' },
-    modelValue: { type: String, required: true },
-    options: { type: Array, default: () => [] },
-})
+interface Props {
+    label: string
+    error?: string
+    modelValue: string
+    options: { value: string; label: string }[]
+}
+
+// eslint-disable-next-line vue/no-setup-props-destructure
+const { label, error = '', modelValue, options = [] } = defineProps<Props>()
 
 const id = uuidv4()
 </script>
 
 <template>
     <div>
-        <label :for="id">{{ props.label }}</label>
+        <label :for="id">{{ label }}</label>
         <select
             v-bind="$attrs"
             :id="id"
             class="box-border w-full rounded-md border-2 border-primary-3 bg-primary-1 text-primary-4 focus:border-primary-4 focus:ring-0"
             :class="[
-                props.error &&
-                    'border-danger-1 text-danger-2 focus:border-danger-2',
+                error && 'border-danger-1 text-danger-2 focus:border-danger-2',
             ]"
-            :value="props.modelValue"
-            :type="props.type"
-            @input="event => emit('update:modelValue', event.target.value)">
+            :value="modelValue"
+            @input="(event: Event) => emit('update:modelValue', (event.target as HTMLSelectElement).value)">
             <option
-                v-for="option in props.options"
+                v-for="option in options"
                 :key="option.value"
                 :value="option.value">
                 {{ option.label }}
             </option>
         </select>
         <p class="text-danger-2">
-            {{ props.error }}
+            {{ error }}
         </p>
     </div>
 </template>

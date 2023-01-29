@@ -35,7 +35,7 @@ const id = uuidv4()
             ]"
             :value="props.modelValue"
             :type="props.type"
-            @input="event => emit('update:modelValue', event.target.value)" />
+            @input="(event: Event) => emit('update:modelValue', (event.target as HTMLInputElement).value)" />
         <p class="text-danger-2">
             {{ props.error }}
         </p>

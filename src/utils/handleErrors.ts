@@ -1,10 +1,10 @@
 import { router } from '@/router'
 import { ApiError } from 'openapi-typescript-fetch'
 
-export const handleErrors = <T>(
+export const handleErrors = (
     error: any | ApiError,
     fields: string[]
-): { key: T; error: string } => {
+): { key: (typeof fields)[number]; error: string } => {
     if (error instanceof ApiError) {
         const errorField = (error.data.message || '').split(' ')[0]
 

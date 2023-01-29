@@ -31,12 +31,9 @@ const submitForm = async () => {
         userStore.$patch(data)
         router.push({ name: 'UpdateCalendar' })
     } catch (err: any) {
-        const { key, error } = handleErrors<keyof typeof errors>(
-            err,
-            Object.keys(formData)
-        )
+        const { key, error } = handleErrors(err, Object.keys(formData))
         if (!error) return
-        errors[key] = error
+        errors[key as keyof typeof errors] = error
     }
 }
 </script>
