@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '')
 
     return {
-        server: { port: +env.PORT },
+        server: { port: +env.CLIENT_PORT },
         plugins: [
             vue({ reactivityTransform: true }),
             eslint({ failOnError: false }),

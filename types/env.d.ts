@@ -3,7 +3,7 @@
 interface ImportMetaEnv {
     readonly VITE_SERVER_URL: string
     readonly VITE_ENCRYPTION_KEY: string
-    readonly PORT: number
+    readonly CLIENT_PORT: number
 }
 
 interface ImportMeta {

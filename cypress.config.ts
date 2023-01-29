@@ -6,6 +6,6 @@ config()
 export default defineConfig({
     e2e: {
         videosFolder: 'temp',
-        baseUrl: `http://localhost:${process.env.PORT}`,
+        baseUrl: `http://localhost:${process.env.CLIENT_PORT}`,
     },
 })
