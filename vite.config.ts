@@ -8,6 +8,10 @@ export default defineConfig(({ mode }) => {
 
     return {
         server: { port: +env.CLIENT_PORT },
+        preview: {
+            port: 80,
+            host: '0.0.0.0',
+        },
         plugins: [
             vue({ reactivityTransform: true }),
             eslint({ failOnError: false }),
